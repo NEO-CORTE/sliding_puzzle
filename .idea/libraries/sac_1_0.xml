@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="sac-1.0">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" recursive="false" type="SOURCES" />
+  </library>
+</component>
