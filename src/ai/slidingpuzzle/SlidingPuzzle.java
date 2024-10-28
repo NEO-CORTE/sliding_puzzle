@@ -302,9 +302,9 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
     }
 
     public static void main(String[] args){
-        int moveNumber = 100;
-        int caseNumber = 10;
-        int option = 0;
+        int moveNumber = 1000;
+        int caseNumber = 100;
+        int option = 1;
 
         System.out.println(SlidingPuzzle.testCase1(moveNumber,caseNumber,option).movesMade);
         System.out.println();

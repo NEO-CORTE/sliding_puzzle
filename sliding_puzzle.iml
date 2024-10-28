@@ -10,14 +10,24 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" />
+          <root url="file://$USER_HOME$/Java_Lib/sac-1.0.3-dist-bundle" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" />
+          <root url="file://$USER_HOME$/Java_Lib/sac-1.0.3-dist-bundle" />
         </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../../../Java_Lib/sac-1.0.3-dist-bundle" recursive="false" type="SOURCES" />
+        <jarDirectory url="file://$USER_HOME$/Java_Lib/sac-1.0.3-dist-bundle" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Java_Lib/sac-1.0.3-dist-bundle" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/jars" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/jars" recursive="false" />
       </library>
     </orderEntry>
   </component>
