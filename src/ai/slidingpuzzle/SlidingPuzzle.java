@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SlidingPuzzle extends sac.graph.GraphStateImpl{
-    static final int n = 3;
+    public static final int n = 3;
 
     public enum moves{U, D, L, R}
 
@@ -58,7 +58,7 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
             return false;
         }
 
-        if(col == (n-1) && move == moves.R){
+        if(col == (n - 1) && move == moves.R){
             return false;
         }
 
@@ -107,7 +107,7 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
 
         if(isValidMove(i,j,move)) {
             _makeMove(i, j, move);
-            this.movesMade = this.movesMade.concat(move.name());
+//            this.movesMade = this.movesMade.concat(move.name());
             return true;
         }
         return false;
@@ -178,15 +178,19 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
         SlidingPuzzle childR = new SlidingPuzzle(this);
 
         if(childU.makeMove(moves.U)){
+            childU.setMoveName(String.valueOf(moves.U));
             children.add(childU);
         }
         if(childD.makeMove(moves.D)){
+            childD.setMoveName(String.valueOf(moves.D));
             children.add(childD);
         }
         if(childL.makeMove(moves.L)){
+            childL.setMoveName(String.valueOf(moves.L));
             children.add(childL);
         }
         if(childR.makeMove(moves.R)){
+            childR.setMoveName(String.valueOf(moves.R));
             children.add(childR);
         }
 
@@ -246,12 +250,12 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
             List<GraphState> algSolutions = alg.getSolutions();
             for (GraphState sol: algSolutions){
                 tmp = (SlidingPuzzle) (sol);
-                pathLength += tmp.movesMade.length();
             }
 
             avgTime += alg.getDurationTime();
             cStateCount += alg.getClosedStatesCount();
             oStateCount += alg.getOpenSet().size();
+            pathLength += alg.getBestSoFar().getMovesAlongPath().size();
         }
 
         System.out.println("Avg time in ms: " + (double)avgTime/(double)caseNumber);
@@ -259,6 +263,7 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
         System.out.println("Avg open: " + (double)oStateCount/(double)caseNumber);
         System.out.println("Avg path length: " + (double)pathLength/(double)caseNumber);
         return tmp;
+
     }
 
     public static SlidingPuzzle testCase2(int moveNumber, int caseNumber, int option){
@@ -285,13 +290,17 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
             List<GraphState> algSolutions = alg.getSolutions();
             for (GraphState sol: algSolutions){
                 tmp = (SlidingPuzzle) (sol);
-                pathLength += tmp.movesMade.length();
+//                pathLength += tmp.movesMade.length();
             }
-
             avgTime += alg.getDurationTime();
             cStateCount += alg.getClosedStatesCount();
             oStateCount += alg.getOpenSet().size();
+            pathLength += alg.getBestSoFar().getMovesAlongPath().size();
+//            if(i == caseNumber-1){
+//            System.out.println(puzzle);
+//                System.out.println(alg.getBestSoFar().getMovesAlongPath());
 
+//            }
         }
 
         System.out.println("Avg time in ms: " + (double)avgTime/(double)caseNumber);
@@ -301,14 +310,40 @@ public class SlidingPuzzle extends sac.graph.GraphStateImpl{
         return tmp;
     }
 
+    public static void testCase3(){
+        SlidingPuzzle puzzle = new SlidingPuzzle();
+        puzzle.fromString("152036784");
+
+        GraphSearchConfigurator conf = new GraphSearchConfigurator();
+        conf.setIdentifierType(IdentifierType.HASH_CODE);
+
+        GraphSearchAlgorithm alg = new AStar(puzzle, conf);
+        SlidingPuzzle.setHFunction(new ManhattanHeuristic());
+        alg.execute();
+
+        System.out.println(alg.getBestSoFar().getMovesAlongPath());
+        System.out.println(alg.getBestSoFar().getMovesAlongPath().size());
+    }
+
     public static void main(String[] args){
-        int moveNumber = 1000;
+        int moveNumber = 20;
         int caseNumber = 100;
         int option = 1;
+//        SlidingPuzzle[] puzzles = new SlidingPuzzle[caseNumber];
+//        for(int i = 0; i < caseNumber; i++){
+//            puzzles[i] = new SlidingPuzzle();
+//            puzzles[i].randomize(moveNumber,i,option);
+//        }
+//
+//        SlidingPuzzle[] mispl = new SlidingPuzzle[caseNumber];
+//        SlidingPuzzle[] manhat = new SlidingPuzzle[caseNumber];
+//        System.arraycopy(puzzles, 0, mispl, 0, caseNumber);
+//        System.arraycopy(puzzles, 0, manhat, 0, caseNumber);
 
-        System.out.println(SlidingPuzzle.testCase1(moveNumber,caseNumber,option).movesMade);
-        System.out.println();
-        System.out.println(SlidingPuzzle.testCase2(moveNumber,caseNumber,option).movesMade);
+//        System.out.println(SlidingPuzzle.testCase1(moveNumber,caseNumber,option).movesMade);
+//        System.out.println();
+//        System.out.println(SlidingPuzzle.testCase2(moveNumber,caseNumber,option).movesMade);
+        testCase3();
     }
 
 
