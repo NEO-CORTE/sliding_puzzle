@@ -1,10 +1,16 @@
 package ai.connect4;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import sac.game.GameState;
-import sac.game.GameStateImpl;
+import java.util.Scanner;
+
+import sac.game.*;
 
 public class Connect4 extends GameStateImpl{
+
+    public static final boolean IS_MAX_AI = true;
+    public static final boolean IS_MIN_AI = false;
 
     public static final int m = 6;
     public static final int n = 7;
@@ -22,6 +28,8 @@ public class Connect4 extends GameStateImpl{
 
     private byte[][] board;
 
+    private int moveIndex = 0;
+
     Connect4(){
         board = new byte[m][n];
         for (int i = 0; i < m; i++) {
@@ -29,6 +37,19 @@ public class Connect4 extends GameStateImpl{
                 board[i][j] = EMPTY;
             }
         }
+    }
+
+    Connect4(Connect4 parent){
+        board = new byte[m][n];
+        this.iLast = parent.iLast;
+        this.jLast = parent.jLast;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = parent.board[i][j];
+            }
+        }
+        this.moveIndex = parent.moveIndex;
+        this.setMaximizingTurnNow(parent.isMaximizingTurnNow());
     }
 
     public boolean move(int j){
@@ -49,10 +70,16 @@ public class Connect4 extends GameStateImpl{
         this.iLast = i;
         this.jLast = j;
 
+        moveIndex++;
+
         return true;
     }
 
-    private boolean isWin(){
+    public boolean isTie(){
+        return moveIndex == m*n;
+    }
+
+    public boolean isWin(){
         if(iLast < 0 || jLast < 0){
             return false;
         }
@@ -72,9 +99,80 @@ public class Connect4 extends GameStateImpl{
             }
             cnt++;
         }
-        if(cnt == 3){
+        if(cnt >= 3){
             return true;
         }
+
+//        Up = Down
+        cnt = 0;
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast + k == m) || (board[this.iLast + k][jLast] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast - k == -1) || (board[this.iLast - k][jLast] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        if(cnt >= 3) {
+            return true;
+        }
+
+        cnt = 0;
+        for (int k = 1; k < 4; k++) {
+            if((this.jLast + k == n) || (board[this.iLast][jLast + k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        for (int k = 1; k < 4; k++) {
+            if((this.jLast - k == -1) || (board[this.iLast][jLast - k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        if(cnt >= 3){
+            return true;
+        }
+
+//      SLASH
+        cnt = 0;
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast - k == -1) || (this.jLast + k == n) || (board[this.iLast - k][jLast + k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast + k == m) || (this.jLast - k == -1) || (board[this.iLast + k][jLast - k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        if(cnt >= 3){
+            return true;
+        }
+
+        cnt = 0;
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast - k == -1) || (this.jLast - k == -1) || (board[this.iLast - k][jLast - k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        for (int k = 1; k < 4; k++) {
+            if((this.iLast + k == m) || (this.jLast + k == n) || (board[this.iLast + k][jLast + k] != symbol)){
+                break;
+            }
+            cnt++;
+        }
+        if(cnt >= 3){
+            return true;
+        }
+
         return false;
     }
 
@@ -109,19 +207,94 @@ public class Connect4 extends GameStateImpl{
 
     @Override
     public List<GameState> generateChildren() {
-        return List.of();
+        List<GameState> children = new ArrayList<>();
+        for(int j = 0; j < m; j++){
+            Connect4 child = new Connect4(this);
+            if(child.move(j)){
+                children.add(child);
+                child.setMoveName(Integer.toString(j));
+            }
+        }
+        return children;
+    }
+
+    @Override
+    public int hashCode() {
+        byte[] flat = new byte[n*m];
+        int k = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                flat[k++] = board[i][j];
+            }
+        }
+        return Arrays.hashCode(flat);
     }
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        GameSearchConfigurator conf = new GameSearchConfigurator();
+        conf.setDepthLimit(5.5);
+        GameSearchAlgorithm algo = new AlphaBetaPruning();
+        algo.setConfigurator(conf);
         Connect4 connect4 = new Connect4();
-        connect4.move(3);
-        connect4.move(3);
-        connect4.move(2);
-        connect4.move(2);
-        connect4.move(4);
-        connect4.move(4);
-        connect4.move(5);
-        System.out.println(connect4.isWin());
-        System.out.println(connect4.toString());
+        Connect4.setHFunction(new Connect4Eval());
+        System.out.println(connect4);
+        while(true){
+            //  max
+            if(!Connect4.IS_MAX_AI){
+                System.out.print("MAX PLAYER 'O' YOUR MOVE:\t");
+                while(!connect4.move(Integer.parseInt(scanner.nextLine()))){
+                    System.out.println("ILLEGAL MOVE, 'O' MAKE A MOVE: ");
+                }
+            }
+            else{
+                algo.setInitial(connect4);
+                algo.execute();
+                System.out.println("MOVES SCORES: " + algo.getMovesScores());
+                System.out.println("TIME: " + algo.getDurationTime());
+                System.out.println("STATES: " + algo.getClosedStatesCount());
+                System.out.println("DEPTH REACHED: " + algo.getDepthReached());
+                int bestMove = Integer.parseInt(algo.getFirstBestMove());
+                connect4.move(bestMove);
+            }
+            System.out.println(connect4);
+            if(connect4.isWin()){
+                System.out.println("Max player wins");
+                break;
+            }
+            if(connect4.isTie()){
+                System.out.println("TIE");
+                break;
+            }
+
+
+            //  min
+            if(!Connect4.IS_MIN_AI){
+                System.out.print("MIN PLAYER 'X' YOUR MOVE:\t");
+                while(!connect4.move(Integer.parseInt(scanner.nextLine()))){
+                    System.out.println("ILLEGAL MOVE, 'X' MAKE A MOVE: ");
+                }
+            }
+            else{
+                algo.setInitial(connect4);
+                algo.execute();
+                System.out.println("MOVES SCORES: " + algo.getMovesScores());
+                System.out.println("TIME: " + algo.getDurationTime());
+                System.out.println("STATES: " + algo.getClosedStatesCount());
+                System.out.println("DEPTH REACHED: " + algo.getDepthReached());
+                int bestMove = Integer.parseInt(algo.getFirstBestMove());
+                connect4.move(bestMove);
+            }
+            System.out.println(connect4);
+            if(connect4.isWin()){
+                System.out.println("Min player wins");
+                break;
+            }
+            if(connect4.isTie()){
+                System.out.println("TIE");
+                break;
+            }
+        }
+        scanner.close();
     }
 }

@@ -1,7 +1,5 @@
 package ai.slidingpuzzle;
 
-import ai.manhattan.ManhattanHeuristic;
-import ai.missplacedtiles.MissplacedTilesHeuristic;
 import sac.IdentifierType;
 import sac.graph.*;
 

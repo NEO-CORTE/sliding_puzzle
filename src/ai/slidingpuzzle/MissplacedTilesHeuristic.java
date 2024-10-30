@@ -1,6 +1,5 @@
-package ai.missplacedtiles;
+package ai.slidingpuzzle;
 
-import ai.slidingpuzzle.SlidingPuzzle;
 import sac.State;
 import sac.StateFunction;
 
