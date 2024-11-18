@@ -10,7 +10,7 @@ import sac.game.*;
 public class Connect4 extends GameStateImpl{
 
     public static final boolean IS_MAX_AI = true;
-    public static final boolean IS_MIN_AI = false;
+    public static final boolean IS_MIN_AI = true;
 
     public static final int m = 6;
     public static final int n = 7;
@@ -50,6 +50,10 @@ public class Connect4 extends GameStateImpl{
         }
         this.moveIndex = parent.moveIndex;
         this.setMaximizingTurnNow(parent.isMaximizingTurnNow());
+    }
+
+    public byte[][] getBoard(){
+        return this.board;
     }
 
     public boolean move(int j){
@@ -232,13 +236,22 @@ public class Connect4 extends GameStateImpl{
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        GameSearchConfigurator conf = new GameSearchConfigurator();
-        conf.setDepthLimit(5.5);
-        GameSearchAlgorithm algo = new AlphaBetaPruning();
-        algo.setConfigurator(conf);
+        GameSearchConfigurator conf1 = new GameSearchConfigurator();
+        GameSearchConfigurator conf2 = new GameSearchConfigurator();
+
+        conf1.setDepthLimit(3.5);
+        conf2.setDepthLimit(5.5);
+
+        GameSearchAlgorithm algo1 = new AlphaBetaPruning();
+        GameSearchAlgorithm algo2 = new AlphaBetaPruning();
+
+        algo1.setConfigurator(conf1);
+        algo2.setConfigurator(conf2);
+
         Connect4 connect4 = new Connect4();
         Connect4.setHFunction(new Connect4Eval());
         System.out.println(connect4);
+
         while(true){
             //  max
             if(!Connect4.IS_MAX_AI){
@@ -248,13 +261,14 @@ public class Connect4 extends GameStateImpl{
                 }
             }
             else{
-                algo.setInitial(connect4);
-                algo.execute();
-                System.out.println("MOVES SCORES: " + algo.getMovesScores());
-                System.out.println("TIME: " + algo.getDurationTime());
-                System.out.println("STATES: " + algo.getClosedStatesCount());
-                System.out.println("DEPTH REACHED: " + algo.getDepthReached());
-                int bestMove = Integer.parseInt(algo.getFirstBestMove());
+                System.out.println("MAX AI");
+                algo1.setInitial(connect4);
+                algo1.execute();
+                System.out.println("MOVES SCORES: " + algo1.getMovesScores());
+                System.out.println("TIME: " + algo1.getDurationTime());
+                System.out.println("STATES: " + algo1.getClosedStatesCount());
+                System.out.println("DEPTH REACHED: " + algo1.getDepthReached() + "\n\n");
+                int bestMove = Integer.parseInt(algo1.getFirstBestMove());
                 connect4.move(bestMove);
             }
             System.out.println(connect4);
@@ -276,13 +290,14 @@ public class Connect4 extends GameStateImpl{
                 }
             }
             else{
-                algo.setInitial(connect4);
-                algo.execute();
-                System.out.println("MOVES SCORES: " + algo.getMovesScores());
-                System.out.println("TIME: " + algo.getDurationTime());
-                System.out.println("STATES: " + algo.getClosedStatesCount());
-                System.out.println("DEPTH REACHED: " + algo.getDepthReached());
-                int bestMove = Integer.parseInt(algo.getFirstBestMove());
+                System.out.println("MIN AI");
+                algo2.setInitial(connect4);
+                algo2.execute();
+                System.out.println("MOVES SCORES: " + algo2.getMovesScores());
+                System.out.println("TIME: " + algo2.getDurationTime());
+                System.out.println("STATES: " + algo2.getClosedStatesCount());
+                System.out.println("DEPTH REACHED: " + algo2.getDepthReached() + "\n\n");
+                int bestMove = Integer.parseInt(algo2.getFirstBestMove());
                 connect4.move(bestMove);
             }
             System.out.println(connect4);
